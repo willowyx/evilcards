@@ -1,0 +1,47 @@
+.msg-container {
+    padding: 10px;
+    background-color: #f0f0f0;
+}
+
+.message-bubble {
+    padding: 10px;
+    background-color: #a1c4fd;
+    color: white;
+    border-radius: 10px;
+    max-width: 70%;
+}
+
+.text-flow {
+    alignment: baseline-left;
+}
+
+.input-area {
+    padding: 10px;
+    background-color: #ffffff;
+    border-top: 1px;
+    border-style: solid;
+    border-color: #dcdcdc;
+}
+
+.msg-input {
+    -fx-pref-height: 50px;
+    -fx-background-color: #f9f9f9;
+    -fx-border-radius: 10px;
+    -fx-padding: 10px;
+}
+
+.send-btn {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-background-radius: 10px;
+    -fx-padding: 10px 20px;
+}
+
+.infolabel {
+    -fx-font-size: 20px;
+}
+
+.primarypane {
+    -fx-border-color: black;
+    -fx-border-width: 2;
+}

@@ -1,0 +1,39 @@
+#messageScrollPane {
+    -fx-background-color: #f0f0f0;
+}
+
+#messageContainer {
+    -fx-background-color: #f0f0f0;
+    -fx-padding: 10;
+}
+
+.message-bubble {
+    -fx-padding: 10;
+    -fx-background-radius: 15;
+    -fx-wrap-text: true;
+    -fx-font-size: 14px;
+}
+
+.message-bubble.sent {
+    -fx-padding: 10;
+    -fx-background-color: #0078d7;
+    -fx-text-fill: white;
+}
+
+.message-bubble.received {
+    -fx-padding: 10;
+    -fx-background-color: #e1e1e1;
+    -fx-text-fill: black;
+}
+
+.text-field {
+    -fx-background-radius: 20;
+    -fx-padding: 10;
+}
+
+.button {
+    -fx-background-color: #0078d7;
+    -fx-text-fill: white;
+    -fx-background-radius: 20;
+    -fx-padding: 10 20;
+}

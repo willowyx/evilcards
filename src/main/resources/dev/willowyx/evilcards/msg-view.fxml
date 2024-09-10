@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.ImageView?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="dev.willowyx.evilcards.MsgController" stylesheets="@messages.css">
+    <padding>
+        <Insets top="20.0" bottom="20.0" left="20.0" right="20.0"/>
+    </padding>
+
+    <top>
+        <VBox>
+            <Label fx:id="contactPhoto" alignment="CENTER" text="DEFAULTPHOTO" />
+            <Label fx:id="contactName" alignment="CENTER" text="blackjack dealer~" />
+        </VBox>
+    </top>
+
+    <center>
+        <ScrollPane fx:id="msgScrollPane" fitToWidth="true" hbarPolicy="NEVER" vbarPolicy="ALWAYS">
+            <VBox fx:id="messageContainer" spacing="20.0">
+            </VBox>
+        </ScrollPane>
+    </center>
+
+    <bottom>
+        <HBox spacing="20.0" alignment="CENTER">
+            <ComboBox fx:id="textSelect" HBox.hgrow="ALWAYS" promptText="Send a message..." />
+            <Button text="Send" onAction="#handleSendMessage" />
+        </HBox>
+    </bottom>
+</BorderPane>
