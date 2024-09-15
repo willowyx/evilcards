@@ -3,49 +3,49 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.text.Text?>
 <BorderPane minWidth="600.0" minHeight="400.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dev.willowyx.evilcards.CardUIController" stylesheets="@cards.css">
     <padding>
         <Insets top="20.0" bottom="20.0" left="20.0" right="20.0"/>
     </padding>
 
     <top>
-        <VBox spacing="20.0">
-            <TextArea fx:id="log_text" editable="false"/>
-            <HBox spacing="20.0" alignment="CENTER_LEFT">
+        <VBox spacing="20.0" alignment="TOP_CENTER">
+            <HBox spacing="20.0" alignment="CENTER">
+                <TextArea fx:id="log_text" editable="false"/>
                 <VBox alignment="CENTER" spacing="20.0">
-                    <Text text="Dealer's Hand" styleClass="infolabel"/>
-                    <Pane fx:id="dealerpane" prefHeight="150" prefWidth="600" styleClass="primarypane">
-                        <!-- cards -->
-                    </Pane>
-
-                    <Text text="Player's Hand" styleClass="infolabel"/>
-                    <Pane fx:id="playerpane" prefHeight="150" prefWidth="600" styleClass="primarypane">
+                    <Pane fx:id="dealerpane" prefHeight="300" prefWidth="400" styleClass="primarypane">
                         <!-- cards -->
                     </Pane>
                 </VBox>
                 <TextArea fx:id="game_text" editable="false"/>
             </HBox>
+            <HBox spacing="20.0" alignment="CENTER" fx:id="actionpane">
+                <VBox alignment="CENTER" styleClass="actionbtn" spacing="40.0">
+                    <HBox spacing="20.0" alignment="CENTER">
+                        <Button fx:id="ac_hit" styleClass="actionbtn" text="Hit" disable="true"/>
+                        <Button fx:id="ac_stand" styleClass="actionbtn" text="Stand" disable="true"/>
+                    </HBox>
+                    <Button fx:id="ac_double" styleClass="actionbtn" text="Double" disable="true"/>
+                    <HBox spacing="20.0" alignment="CENTER">
+                        <TextField fx:id="wInput" styleClass="actionbtn" promptText="0"/>
+                        <Button fx:id="btinitbtn" text="bet" onAction="#onbtinit" disable="true"/>
+                    </HBox>
+                    <Button fx:id="startbtn" styleClass="actionbtn" text="Start game" onAction="#onStartnew"/>
+                </VBox>
+                <Pane fx:id="playerpane" prefHeight="300" prefWidth="1200" styleClass="primarypane">
+                    <!-- cards -->
+                </Pane>
+            </HBox>
         </VBox>
     </top>
 
     <bottom>
-        <VBox alignment="BOTTOM_CENTER" spacing="20.0" fx:id="actionpane">
-            <HBox alignment="CENTER" spacing="20.0">
-                <Button fx:id="ac_hit" text="Hit" disable="true"/>
-                <Button fx:id="ac_stand" text="Stand" disable="true"/>
-                <Button fx:id="ac_double" text="Double" disable="true"/>
-            </HBox>
-            <HBox alignment="CENTER" spacing="20.0">
-                <TextField fx:id="wInput" promptText="bet..."/>
-                <Button fx:id="startbtn" text="Start" onAction="#onStartnew"/>
-            </HBox>
-            <HBox alignment="CENTER" spacing="20.0">
-                <Button text="save" onAction="#onSave"/>
-                <Button text="player stats" onAction="#onStatView"/>
-                <Button fx:id="quitbtn" text="end day" onAction="#onsoftquit"/>
-            </HBox>
-        </VBox>
+        <HBox spacing="20.0" alignment="BOTTOM_CENTER">
+            <Button fx:id="savebtn" text="save" onAction="#onSave" disable="true"/>
+            <Button fx:id="checkblbtn" onAction="#oncheckbl" text="check balance" disable="true"/>
+            <Button text="player stats" onAction="#onStatView"/>
+            <Button fx:id="quitbtn" text="end day" onAction="#onsoftquit"/>
+        </HBox>
     </bottom>
 
 </BorderPane>

@@ -1,45 +1,12 @@
 package dev.willowyx.evilcards;
 
-import atlantafx.base.controls.Card;
-import com.almasb.fxgl.app.GameApplication;
-import com.almasb.fxgl.app.GameSettings;
-import com.almasb.fxgl.dsl.FXGL;
-import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.layout.Pane;
+import javafx.application.Application;
+import javafx.stage.Stage;
 
-import java.io.IOException;
-
-public class CardsUI extends GameApplication {
-    State state = new State();
-    @FXML
-    private Pane dealerpane;
-
-    @FXML
-    private Pane playerpane;
-
+public class CardsUI extends Application {
     @Override
-    protected void initSettings(GameSettings settings) {
-    }
-
-    @Override
-    protected void initUI() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("cards-view.fxml"));
-            Parent root = loader.load();
-
-            FXGL.getGameScene().addUINode(root);
-
-            this.dealerpane = (Pane) root.lookup("#dealerpane");
-            this.playerpane = (Pane) root.lookup("#playerpane");
-
-        } catch (IOException e) {
-            state.showAlert("could not initialize game! " + e);
-        }
-    }
-
-    public static void main(String[] args) {
-        launch(args);
+    public void start(Stage stage) {
+        State state = new State();
+        state.showAlert("Game must be initialized by Main");
     }
 }

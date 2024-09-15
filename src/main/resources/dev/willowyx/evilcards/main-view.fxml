@@ -16,6 +16,7 @@
     <top>
         <VBox alignment="TOP_CENTER">
             <Label styleClass="header" text="evil blackjack"/>
+            <Label fx:id="gamever" text="(unknown version)"/>
             <Label fx:id="styletext" text="pop culture moment"/>
         </VBox>
     </top>
@@ -34,7 +35,8 @@
     <bottom>
         <HBox alignment="BOTTOM_CENTER" spacing="20.0">
             <Button fx:id="quitbtn" text="Quit" onAction="#onQuitClick"/>
-            <Button text="New game" onAction="#onStartGame" defaultButton="true"/>
+            <Button fx:id="loadbtn" text="Load save" onAction="#startSaveLoad"/>
+            <Button fx:id="startbtn" text="New game" onAction="#onStartGame"/>
         </HBox>
     </bottom>
 </BorderPane>

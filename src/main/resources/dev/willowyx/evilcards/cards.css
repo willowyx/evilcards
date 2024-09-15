@@ -45,3 +45,7 @@
     -fx-border-color: black;
     -fx-border-width: 2;
 }
+
+.actionbtn {
+    -fx-width: 120px;
+}

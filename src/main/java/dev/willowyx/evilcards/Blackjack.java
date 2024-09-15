@@ -2,7 +2,6 @@ package dev.willowyx.evilcards;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 
 public class Blackjack {
@@ -10,10 +9,10 @@ public class Blackjack {
     private ArrayList<String> cards;
     private ArrayList<String> dealerhand;
     private ArrayList<String> playerhand;
-    public int pwins;
-    public int plose;
-    public int casht; // total player cash, populated from json
-    public int bamt; // intended bet amt
+    private int pwins;
+    private int plose;
+    private int casht; // total player cash, populated from json
+    private int bamt; // intended bet amt
 
     public void initCards() {
         String[] suits = {"c", "s", "h", "d"};
@@ -27,37 +26,28 @@ public class Blackjack {
                 cards.add(value + suit);
             }
         }
-
         Collections.shuffle(cards);
     }
 
-    private void addCard(ArrayList<String> hand) {
+    public void addCard(ArrayList<String> hand) {
         hand.add(cards.removeFirst());
     }
 
-    public void dealCards() {
-        addCard(dealerhand);
-        addCard(playerhand);
-        addCard(playerhand);
-//        displayTable();
-        System.out.println("SHOULD UPDATE");
-//        handleEndState(checkScores("none"));
-    }
-
-//    private void displayTable() {
-//        cuic.addlog("DEALER " + dealerhand);
-//        cuic.addlog(" PTS   " + getpts(dealerhand));
-//        cuic.addlog("PLAYER " + playerhand);
-//        cuic.addlog(" PTS   " + getpts(playerhand));
-//        cuic.addlog("=========================");
-//    }
-
     public int getStats(String type) {
         return switch (type) {
-            case "wins" -> pwins;
-            case "losses" -> plose;
+            case "pwins" -> pwins;
+            case "plose" -> plose;
+            case "casht" -> casht;
             default -> -1;
         };
+    }
+
+    public void setStats(String type, int newval) {
+        switch (type) {
+            case "pwins" -> pwins = newval;
+            case "plose" -> plose = newval;
+            case "casht" -> casht = newval;
+        }
     }
 
     public int getpts(ArrayList<String> hand) {
@@ -134,52 +124,46 @@ public class Blackjack {
     }
 
     public String bset(int amount, String action) {
-        if(action.equals("normal")) {
-            if(casht >= amount) {
-                casht -= amount;
-                bamt = amount;
-                return "normal";
-            } else {
-                return "nofunds";
-            }
-        } else if(action.equals("double")) {
-            if(casht >= amount) {
-                casht -= amount;
-                bamt += amount;
-                return "double";
-            }
+        switch (action) {
+            case "normal":
+                if (casht >= amount) {
+                    casht -= amount;
+                    bamt = amount;
+                    return "normal";
+                } else {
+                    return "nofunds";
+                }
+            case "double":
+                if (casht >= amount) {
+                    casht -= amount;
+                    bamt += amount;
+                    return "double";
+                } else {
+                    return "nofunds";
+                }
         }
         return "noaction";
     }
 
-    public boolean bman(String result) {
+    public void bman(String result) {
         switch (result) {
             case "win" -> {
                 bamt *= 2;
                 casht += bamt;
-                return true;
             }
-            case "tie" -> {
-                casht += bamt;
-                return true;
-            }
-            case "lose" -> {
-                bamt = 0;
-                return true;
-            }
-            case "romantical" -> {
-                casht = 0;
-                return true;
-            }
+            case "tie" -> casht += bamt;
+            case "lose" -> bamt = 0;
+            case "romantical" -> casht = 0;
         }
-        return false;
     }
 
     private String evalfscore(int dealerPts, int playerPts) {
         String result = "lose_generic";
         if (dealerPts > 21) {
             result = "win_bust";
-        } else if (dealerPts == playerPts) {
+        } else if (dealerPts == 21 && dealerhand.size() == 2) {
+            return "lose_blackjack";
+        } else if (dealerPts == playerPts) {        // only when player selects stand
             result = "tie_push";
         } else if (playerPts > dealerPts) {
             result = "win_generic";
@@ -187,15 +171,16 @@ public class Blackjack {
         return result;
     }
 
-    private String evalintscore(int dealerPts, int playerPts) { // some end states are slightly broken
-        if (dealerPts == 21 && dealerhand.size() == 2) {
-            if (playerPts == 21 && playerhand.size() == 2) {
+    private String evalintscore(int dealerPts, int playerPts) {
+        if (playerPts == 21 && playerhand.size() == 2) {
+            addCard(dealerhand);
+            if (dealerPts == 21 && dealerhand.size() == 2) {
                 return "tie_blackjack";
             } else {
-                return "lose_blackjack";
+                return "win_blackjack";
             }
-        } else if (playerPts == 21 && playerhand.size() == 2) {
-            return "win_blackjack";
+        } else if (dealerPts == 21 && dealerhand.size() == 2) {
+            return "lose_blackjack";
         } else if (playerPts > 21) {
             return "lose_bust";
         } else if (dealerPts > 21) {
@@ -205,31 +190,10 @@ public class Blackjack {
         }
     }
 
-    public void opt(String action) {
-        switch (action) {
-            case "hit":
-                addCard(playerhand);
-                break;
-            case "stand":
-                while (getpts(dealerhand) < 17) {
-                    addCard(dealerhand);
-//                    displayTable();
-                    System.out.println("SHOULD UPDATE");
-                }
-                break;
-            case "double":
-                addCard(playerhand);
-                break;
-        }
-//        displayTable();
-        System.out.println("SHOULD UPDATE");
-        handleEndState(checkScores(action));
-    }
-
     public String handleEndState(String state) {
         switch (state) {
             case "tie_blackjack":
-                return "TIE: Both Blackjack";
+                return "TIE: Two Blackjacks";
             case "lose_blackjack":
                 plose += 1;
                 return "YOU LOSE: Dealer Blackjack";
@@ -249,7 +213,7 @@ public class Blackjack {
                 plose += 1;
                 return "YOU LOSE";
             case "tie_push":
-                return "TIE: push";
+                return "PUSH: You tied";
             case "incomplete":
                 break;
         }
@@ -257,20 +221,7 @@ public class Blackjack {
     }
 
     public static void main(String[] args) {
-        Blackjack game = new Blackjack();
-        game.initCards();
-        game.dealCards();
-
-        Scanner scanner = new Scanner(System.in);
-        String gameState = game.checkScores("none");
-
-        while (gameState.equals("incomplete")) {
-            System.out.print("Enter action: ");
-            String action = scanner.nextLine();
-            game.opt(action);
-            gameState = game.checkScores(action);
-        }
-
-        System.out.println("Game over!");
+        State state = new State();
+        state.showAlert("Game core must be initialized by CardUI");
     }
 }
