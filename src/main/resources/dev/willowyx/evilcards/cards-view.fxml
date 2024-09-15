@@ -43,7 +43,7 @@
         <HBox spacing="20.0" alignment="BOTTOM_CENTER">
             <Button fx:id="savebtn" text="save" onAction="#onSave" disable="true"/>
             <Button fx:id="checkblbtn" onAction="#oncheckbl" text="check balance" disable="true"/>
-            <Button text="player stats" onAction="#onStatView"/>
+            <Button fx:id="plstatsbtn" text="player stats" onAction="#onStatView" disable="true"/>
             <Button fx:id="quitbtn" text="end day" onAction="#onsoftquit"/>
         </HBox>
     </bottom>

@@ -64,21 +64,21 @@ public class MainController {
 
             CardUIController cuicontroller = loader.getController();
             cuicontroller.handleSave(loadfile);
-            System.out.println("handed off as " + loadfile);
 
-            Stage stage = new Stage();
-            stage.setScene(new Scene(root));
-            stage.setTitle("Evil Blackjack");
+            Stage cardStage = new Stage();
+            cardStage.setScene(new Scene(root));
+            cardStage.setTitle("Evil Blackjack");
+            cardStage.show();
 
-//                filedata.setAppIcon("default", stage);
-            stage.show();
             exitMain();
         } catch (IOException e) {
             e.printStackTrace();
+            state.showAlert("couldn't initialize window! " + e);
+            loadbtn.setDisable(false);
+            startbtn.setDisable(false);
         }
-        loadbtn.setDisable(false);
-        startbtn.setDisable(false);
     }
+
 
     @FXML
     private void onStartGame() {

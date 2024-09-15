@@ -100,7 +100,7 @@ public class Blackjack {
         };
     }
 
-    public ArrayList<String> getStateInfo(String type, String orig) {
+    public ArrayList<String> getStateInfoOrig(String type, String orig) {
         return switch (type) {
             case "playerhand" -> playerhand;
             case "dealerhand" -> dealerhand;

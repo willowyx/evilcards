@@ -29,7 +29,7 @@ public class CardUIController {
     private Button quitbtn;
 
     @FXML
-    private Button checkblbtn, btinitbtn, savebtn, startbtn, ac_hit, ac_stand, ac_double;
+    private Button checkblbtn, btinitbtn, plstatsbtn, savebtn, startbtn, ac_hit, ac_stand, ac_double;
 
     @FXML
     private TextField wInput;
@@ -48,23 +48,20 @@ public class CardUIController {
     }
 
     public void handleInitVar() {
-        if(state.checkGameLoad()) {
-            if (state.handleSavedata(cSavefile)) {
-                if (state.checkGameVer()) {
-                    blackjack.setStats("pwins", state.sPwins);
-                    blackjack.setStats("plose", state.sPlose);
-                    evilstg = state.sEvilstg;
-                    dlrpity = state.sDlrpity;
-                    blackjack.setStats("casht", state.sCasht);
-                    npcprog = state.sNpcprog;
-                    npcagr = state.sNpcagr;
-                    turn = state.sTurn;
-                } else {
-                    System.out.println("you are loading an old save, some things may break!");
-                }
+        System.out.println("received as " + cSavefile);
+        if (state.handleSavedata(cSavefile)) {
+            if (state.checkGameVer()) {
+                blackjack.setStats("pwins", state.sPwins);
+                blackjack.setStats("plose", state.sPlose);
+                evilstg = state.sEvilstg;
+                dlrpity = state.sDlrpity;
+                blackjack.setStats("casht", state.sCasht);
+                npcprog = state.sNpcprog;
+                npcagr = state.sNpcagr;
+                turn = state.sTurn;
+            } else {
+                System.out.println("you are loading an old save, some things may break!");
             }
-        } else {
-            blackjack.setStats("casht", 500);
         }
     }
 
@@ -73,17 +70,21 @@ public class CardUIController {
         handleInitVar();
         btinitbtn.setDisable(false);
         checkblbtn.setDisable(false);
+        plstatsbtn.setDisable(false);
         startbtn.setDisable(true);
         savebtn.setDisable(false);
         dealer_say("hey, welcome. you know how to play, right?", "neutral");
         player_say("...");
+
+//        blackjack.initCards();
+//        dealCards();
     }
 
     public void dealCards() {
-        blackjack.addCard(blackjack.getStateInfo("dealerhand", "true"));
+        blackjack.addCard(blackjack.getStateInfoOrig("dealerhand", "true"));
         updateUI();
         for (int i = 0; i < 2; i++) {
-            blackjack.addCard(blackjack.getStateInfo("playerhand", "true"));
+            blackjack.addCard(blackjack.getStateInfoOrig("playerhand", "true"));
             updateUI();
         }
     }
@@ -128,7 +129,7 @@ public class CardUIController {
                 default -> false;
             };
         } else if(type.equals("double")) {
-            String bDouble = blackjack.bset(Integer.parseInt(wInput.getText()), "normal");
+            String bDouble = blackjack.bset(Integer.parseInt(wInput.getText()), "double");
             return switch (bDouble) {
                 case "double" -> true;
                 case "nofunds" -> {
@@ -189,10 +190,13 @@ public class CardUIController {
         switch (state) {
             case "lose_blackjack", "lose_bust", "lose_generic":
                 blackjack.bman("lose");
+                break;
             case "win_blackjack", "win_bust", "win_generic":
                 blackjack.bman("win");
+                break;
             case "tie_blackjack", "tie_push":
                 blackjack.bman("tie");
+                break;
         }
 
         btinitbtn.setDisable(false);
@@ -200,7 +204,6 @@ public class CardUIController {
         ac_hit.setDisable(true);
         ac_stand.setDisable(true);
         ac_double.setDisable(true);
-        addlog(blackjack.handleEndState(blackjack.checkScores(type)), true);
     }
 
     private void connectActions() {
@@ -214,12 +217,13 @@ public class CardUIController {
 
         ac_stand.setOnAction(e -> {
             opt("stand");
-            blackjack.checkScores("stand");
+            String result = blackjack.checkScores("stand");
             ac_double.setDisable(true);
-            if(!blackjack.checkScores("stand").equals("incomplete")) {
-                gameover_ui("stand", blackjack.checkScores("stand"));
+            if (!result.equals("incomplete")) {
+                gameover_ui("stand", result);
             }
         });
+
 
         ac_double.setOnAction(e -> {        // should only allow 100% addition
             if(checkBalance("double")) {
@@ -248,11 +252,11 @@ public class CardUIController {
         animateCards(blackjack.getStateInfo("dealerhand"), dealerpane, 50, 50, 0.3, 35);
         animateCards(blackjack.getStateInfo("playerhand"), playerpane, 50, 50, 0.3, 170);
 
-//        String dlhand = Arrays.toString(new ArrayList[]{blackjack.getStateInfo("dealerhand", "orig")});
-//        String dlpts = String.valueOf(blackjack.getpts(blackjack.getStateInfo("dealerhand", "orig")));
+//        String dlhand = Arrays.toString(new ArrayList[]{blackjack.getStateInfoOrig("dealerhand", "orig")});
+//        String dlpts = String.valueOf(blackjack.getpts(blackjack.getStateInfoOrig("dealerhand", "orig")));
 //
-//        String plhand = Arrays.toString(new ArrayList[]{blackjack.getStateInfo("playerhand", "orig")});
-//        String plpts = String.valueOf(blackjack.getpts(blackjack.getStateInfo("playerhand", "orig")));
+//        String plhand = Arrays.toString(new ArrayList[]{blackjack.getStateInfoOrig("playerhand", "orig")});
+//        String plpts = String.valueOf(blackjack.getpts(blackjack.getStateInfoOrig("playerhand", "orig")));
 
 //        addlog("DEALER " + dlhand);
 //        addlog(" PTS   " + dlpts);
@@ -264,12 +268,12 @@ public class CardUIController {
     public void opt(String action) {
         switch (action) {
             case "hit":
-                blackjack.addCard(blackjack.getStateInfo("playerhand", "true"));
+                blackjack.addCard(blackjack.getStateInfoOrig("playerhand", "true"));
                 blackjack.handleEndState(blackjack.checkScores("hit"));
                 break;
             case "stand":
-                while (blackjack.getpts(blackjack.getStateInfo("dealerhand", "true")) < 17) {
-                    blackjack.addCard(blackjack.getStateInfo("dealerhand", "true"));
+                while (blackjack.getpts(blackjack.getStateInfoOrig("dealerhand", "true")) < 17) {
+                    blackjack.addCard(blackjack.getStateInfoOrig("dealerhand", "true"));
                     updateUI();
                 }
 
@@ -278,7 +282,7 @@ public class CardUIController {
                 });
                 break;
             case "double":
-                blackjack.addCard(blackjack.getStateInfo("playerhand", "true"));
+                blackjack.addCard(blackjack.getStateInfoOrig("playerhand", "true"));
                 blackjack.handleEndState(blackjack.checkScores(action));
                 break;
         }
