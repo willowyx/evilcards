@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="dev.willowyx.evilcards.SaveController" stylesheets="@save.css">
+    <padding>
+        <Insets top="20.0" bottom="20.0" left="20.0" right="20.0"/>
+    </padding>
+
+    <top>
+        <VBox alignment="TOP_CENTER" spacing="20.0">
+            <Label alignment="CENTER" text="Enter a name to identify your save" />
+        </VBox>
+    </top>
+
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="20.0">
+            <TextField fx:id="sNameInput" styleClass="actionbtn" promptText="i.e. bartholomew"/>
+            <HBox alignment="CENTER" spacing="20.0">
+                <Button text="cancel" onAction="#onClose"/>
+                <Button text="save" onAction="#onSaveInit" defaultButton="true"/>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

@@ -3,6 +3,9 @@ package dev.willowyx.evilcards;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
@@ -10,19 +13,22 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Objects;
 
 public class CardUIController {
     Blackjack blackjack = new Blackjack();
     State state = new State();
 
-    private int evilstg = 0;
-    private int dlrpity = 0;
-    private int npcprog = -1;
-    private int npcagr = -1;
-    private String turn = "cards";
+    private int evilstg;
+    private int dlrpity;
+    private int npcprog;
+    private int npcagr;
+    private String turn;
     private File cSavefile;
 
     @FXML
@@ -49,25 +55,36 @@ public class CardUIController {
 
     public void handleInitVar() {
         System.out.println("received as " + cSavefile);
-        if (state.handleSavedata(cSavefile)) {
-            if (state.checkGameVer()) {
-                blackjack.setStats("pwins", state.sPwins);
-                blackjack.setStats("plose", state.sPlose);
-                evilstg = state.sEvilstg;
-                dlrpity = state.sDlrpity;
-                blackjack.setStats("casht", state.sCasht);
-                npcprog = state.sNpcprog;
-                npcagr = state.sNpcagr;
-                turn = state.sTurn;
-            } else {
-                System.out.println("you are loading an old save, some things may break!");
-            }
-        }
+        state.handleSavedata(cSavefile);
+        blackjack.setStats("pwins", state.sPwins);
+        blackjack.setStats("plose", state.sPlose);
+        evilstg = state.sEvilstg;
+        dlrpity = state.sDlrpity;
+        blackjack.setStats("casht", state.sCasht);
+        npcprog = state.sNpcprog;
+        npcagr = state.sNpcagr;
+        turn = state.sTurn;
+    }
+
+    public void handleInitVar(boolean newfile) {
+        System.out.println("no file loaded, creating save...");
+        blackjack.setStats("pwins", 0);
+        blackjack.setStats("plose", 0);
+        evilstg = 0;
+        dlrpity = 0;
+        blackjack.setStats("casht", 100);
+        npcprog = -1;
+        npcagr = -1;
+        turn = "cards";
     }
 
     @FXML
     protected void onStartnew() {
-        handleInitVar();
+        if(cSavefile != null) {
+            handleInitVar();
+        } else {
+            handleInitVar(true);
+        }
         btinitbtn.setDisable(false);
         checkblbtn.setDisable(false);
         plstatsbtn.setDisable(false);
@@ -75,9 +92,6 @@ public class CardUIController {
         savebtn.setDisable(false);
         dealer_say("hey, welcome. you know how to play, right?", "neutral");
         player_say("...");
-
-//        blackjack.initCards();
-//        dealCards();
     }
 
     public void dealCards() {
@@ -110,11 +124,30 @@ public class CardUIController {
     private boolean validateWInput() {
         try {
             int wiVal = Integer.parseInt(wInput.getText());
-            return wiVal > 0;
+            boolean wiValS = wiVal > 0;
+            int wiValDet = 25;
+
+            if(wiValS) {
+                if (evilstg > 1) {
+                    wiValDet = 50;
+                } else if (evilstg > 3) {
+                    wiValDet = 300;
+                } else if (evilstg > 5) {
+                    wiValDet = Integer.MAX_VALUE;
+                }
+                if (wiVal <= wiValDet) {
+                    return true;
+                } else if(wiVal > blackjack.getStats("casht")) {
+                    dealer_say("you don't have the money...", "annoyed");
+                } else {
+                    dealer_say("high roller, huh... well, not this time. keep it under " + wiValDet + ".", "pleased");
+                }
+            }
         } catch (NumberFormatException e) {
             dealer_say("that's not a bet you dingus...", "annoyed");
             return false;
         }
+        return false;
     }
 
     public boolean checkBalance(String type) {
@@ -143,17 +176,42 @@ public class CardUIController {
     }
 
     @FXML
-    protected void onSave() {
+    private void onSave() {
         int bPwins = blackjack.getStats("pwins");
         int bPlose = blackjack.getStats("plose");
         int bCasht = blackjack.getStats("casht");
-        state.saveState(bPwins, bPlose, evilstg, dlrpity, bCasht, npcprog, npcagr, turn);
+
+        if(cSavefile == null) {
+            try {
+                String savename = "";
+                MainController mainc = new MainController();
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("save-view.fxml"));
+                Parent root = loader.load();
+
+                Stage savestage = new Stage();
+                savestage.initModality(Modality.WINDOW_MODAL);
+                savestage.setScene(new Scene(root));
+                savestage.setTitle("Save game");
+
+                SaveController savec_inst = loader.getController();
+                savec_inst.varInit(bPwins, bPlose, evilstg, dlrpity, bCasht, npcprog, npcagr, savename, turn);
+
+                mainc.setAppIcon("default", savestage);
+                savestage.show();
+            } catch (IOException e) {
+                state.showAlert("couldn't initialize window! " + e);
+            }
+        } else {
+            state.saveState(bPwins, bPlose, evilstg, dlrpity, bCasht, npcprog, npcagr, state.sAvename, turn, cSavefile);
+        }
     }
 
     @FXML
     protected void onStatView() {
-        addlog("WINS   " + blackjack.getStats("pwins"), true);
+        addlog("NAME " + state.sAvename, true);
+        addlog("WINS " + blackjack.getStats("pwins"));
         addlog("LOSSES " + blackjack.getStats("plose"));
+        addlog("CASH " + blackjack.getStats("casht"));
     }
 
     @FXML
@@ -175,6 +233,7 @@ public class CardUIController {
             blackjack.initCards();
             dealCards();
             updateUI();
+            connectRefreshUI();
             wInput.setDisable(true);
             btinitbtn.setDisable(true);
             ac_hit.setDisable(false);
@@ -184,6 +243,15 @@ public class CardUIController {
                 gameover_ui("none", blackjack.checkScores("none"));
             }
         }
+    }
+
+    private void connectRefreshUI() {
+        actionpane.addEventHandler(ActionEvent.ACTION, event -> {
+            if (event.getTarget() instanceof Button actionedbtn) {
+//                System.out.println("Button clicked: " + actionedbtn.getText());
+                updateUI();
+            }
+        });
     }
 
     private void gameover_ui(String type, String state) {
@@ -225,7 +293,7 @@ public class CardUIController {
         });
 
 
-        ac_double.setOnAction(e -> {        // should only allow 100% addition
+        ac_double.setOnAction(e -> {
             if(checkBalance("double")) {
                 opt("double");
                 blackjack.checkScores("double");
@@ -234,13 +302,6 @@ public class CardUIController {
                 if (!blackjack.checkScores("hit").equals("incomplete")) {
                     gameover_ui("hit", blackjack.checkScores("hit"));
                 }
-            }
-        });
-
-        actionpane.addEventHandler(ActionEvent.ACTION, event -> {
-            if (event.getTarget() instanceof Button actionedbtn) {
-//                System.out.println("Button clicked: " + actionedbtn.getText());
-                updateUI();
             }
         });
     }

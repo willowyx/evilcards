@@ -1,5 +1,6 @@
 module dev.willowyx.evilcards {
     requires javafx.fxml;
+    requires javafx.controls;
 
     requires org.controlsfx.controls;
     requires com.almasb.fxgl.all;

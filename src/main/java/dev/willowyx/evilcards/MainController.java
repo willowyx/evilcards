@@ -6,11 +6,13 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Random;
 
 public class MainController {
@@ -41,13 +43,27 @@ public class MainController {
         curstage.close();
     }
 
+    public void setAppIcon(String type, Stage stage) {
+        switch (type) {
+            case "default":
+                URL url = getClass().getResource("/appicon.png");
+                if (url != null) {
+                    Image img_appicon = new Image(url.toString());
+                    stage.getIcons().add(img_appicon);
+                } else {
+                    System.out.println("App icon not found in resources");
+                }
+                break;
+        }
+    }
+
     @FXML
     private void startSaveLoad() {
         loadbtn.setDisable(true);
         startbtn.setDisable(true);
 
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Load Evil Blackjack save");
+        fileChooser.setTitle("Load save");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Evil Blackjack save (*.json)", "*.json"));
         File loadfile = fileChooser.showOpenDialog(stage);
 
@@ -69,6 +85,8 @@ public class MainController {
             cardStage.setScene(new Scene(root));
             cardStage.setTitle("Evil Blackjack");
             cardStage.show();
+
+            setAppIcon("default", cardStage);
 
             exitMain();
         } catch (IOException e) {
@@ -92,7 +110,7 @@ public class MainController {
             stage.setScene(new Scene(root));
             stage.setTitle("Evil Blackjack");
 
-//            filedata.setAppIcon("default", stage);
+            setAppIcon("default", stage);
             stage.show();
         } catch (IOException e) {
             state.showAlert("couldn't initialize window! " + e);
