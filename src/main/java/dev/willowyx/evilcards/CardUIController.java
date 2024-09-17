@@ -192,12 +192,15 @@ public class CardUIController {
                 savestage.initModality(Modality.WINDOW_MODAL);
                 savestage.setScene(new Scene(root));
                 savestage.setTitle("Save game");
-
                 SaveController savec_inst = loader.getController();
                 savec_inst.varInit(bPwins, bPlose, evilstg, dlrpity, bCasht, npcprog, npcagr, savename, turn);
 
                 mainc.setAppIcon("default", savestage);
                 savestage.show();
+
+                Stage cui_stage = (Stage) quitbtn.getScene().getWindow();
+                cui_stage.close();
+
             } catch (IOException e) {
                 state.showAlert("couldn't initialize window! " + e);
             }
@@ -208,7 +211,11 @@ public class CardUIController {
 
     @FXML
     protected void onStatView() {
-        addlog("NAME " + state.sAvename, true);
+        if(state.sAvename != null) {
+            addlog("NAME " + state.sAvename, true);
+        } else {
+            addlog("[no save]", true);
+        }
         addlog("WINS " + blackjack.getStats("pwins"));
         addlog("LOSSES " + blackjack.getStats("plose"));
         addlog("CASH " + blackjack.getStats("casht"));

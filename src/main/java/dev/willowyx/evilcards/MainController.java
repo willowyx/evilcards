@@ -61,19 +61,16 @@ public class MainController {
     private void startSaveLoad() {
         loadbtn.setDisable(true);
         startbtn.setDisable(true);
-
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load save");
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Evil Blackjack save (*.json)", "*.json"));
         File loadfile = fileChooser.showOpenDialog(stage);
-
         if (loadfile == null) {
             System.out.println("No file selected");
             loadbtn.setDisable(false);
             startbtn.setDisable(false);
             return;
         }
-
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("cards-view.fxml"));
             Parent root = loader.load();
@@ -118,6 +115,30 @@ public class MainController {
             startbtn.setDisable(false);
         }
         exitMain();
+    }
+
+    public void startSaveLoad(File loadfile) {
+        if (loadfile == null) {
+            state.showAlert("No file selected");
+            return;
+        }
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("cards-view.fxml"));
+            Parent root = loader.load();
+
+            CardUIController cuicontroller = loader.getController();
+            cuicontroller.handleSave(loadfile);
+
+            Stage cardStage = new Stage();
+            cardStage.setScene(new Scene(root));
+            cardStage.setTitle("Evil Blackjack");
+            cardStage.show();
+
+            setAppIcon("default", cardStage);
+        } catch (IOException e) {
+            e.printStackTrace();
+            state.showAlert("couldn't initialize window! " + e);
+        }
     }
 
     @FXML
