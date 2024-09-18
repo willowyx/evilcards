@@ -18,7 +18,8 @@ public class State {
     private Stage stage;
 
     public String pkgid = "dev.willowyx.evilcards";
-    public String version = "0.4.3";
+    public String version = "0.4.4";
+    public String minver = "0.4.4";
     public String tagline = "core systems";
 
     public String rSaveLocation;

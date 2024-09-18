@@ -33,15 +33,15 @@ public class SaveController {
         sTurn = turn;
     }
 
-    protected void loadSave() {
+    protected boolean loadSave() {
         MainController mainc = new MainController();
 
         if (savelocf == null) {
-            state.showAlert("error: could not locate savefile!");
-            return;
+            return false;
         }
         File tsavelocf = new File(savelocf);
         mainc.startSaveLoad(tsavelocf);
+        return true;
     }
 
     @FXML
@@ -51,8 +51,11 @@ public class SaveController {
             sAvename = sNameInput.getText();
             state.saveState(sPwins, sPlose, sEvilstg, sDlrpity, sCasht, sNpcprog, sNpcagr, sAvename, sTurn);
             savelocf = state.rSaveLocation;
-            loadSave();
-            onClose();
+            if(!loadSave()) {
+                savebtn.setDisable(false);
+            } else {
+                onClose();
+            }
         }
     }
 

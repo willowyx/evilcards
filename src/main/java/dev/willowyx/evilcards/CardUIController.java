@@ -81,7 +81,14 @@ public class CardUIController {
     @FXML
     protected void onStartnew() {
         if(cSavefile != null) {
-            handleInitVar();
+            try {
+                handleInitVar();
+            } catch (Exception e) {
+                String warnformat = "Your save could not be loaded because it's using an incompatible or old format. " +
+                        "[ < " + state.minver + " ]\n\n";
+                state.showAlert(warnformat + e);
+                handleInitVar(true);
+            }
         } else {
             handleInitVar(true);
         }
@@ -181,7 +188,7 @@ public class CardUIController {
         int bPlose = blackjack.getStats("plose");
         int bCasht = blackjack.getStats("casht");
 
-        if(cSavefile == null) {
+        if((cSavefile == null) || (state.sAvename == null)) {
             try {
                 String savename = "";
                 MainController mainc = new MainController();
